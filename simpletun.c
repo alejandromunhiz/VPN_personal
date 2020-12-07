@@ -361,11 +361,9 @@ int main(int argc, char *argv[]) {
   const unsigned char aes_key[] = {0x00,0x11,0x22,0x33,0x44,0x55,0x66,0x77,0x88,0x99,0xAA,0xBB,0xCC,0xDD,0xEE,0xFF};
   char buffer_encriptado[BUFSIZE];
   AES_KEY enc_key, dec_key;
-  AES_set_encrypt_key(aes_key, sizeof(aes_key)*8, &enc_key);
-  AES_set_decrypt_key(aes_key, sizeof(aes_key)*8, &dec_key);
-  print_data("Clave encriptado", (const void*)enc_key, sizeof(aes_key)*8);
-  print_data("Clave desencriptado", (const void*)dec_key, sizeof(aes_key)*8);
-  sleep(100000);
+//  AES_set_encrypt_key(aes_key, sizeof(aes_key)*8, &enc_key);
+//  AES_set_decrypt_key(aes_key, sizeof(aes_key)*8, &dec_key);
+
 #endif
 
 /* A manera informativa, indicamos el modo que se está ejecutando */
@@ -466,9 +464,12 @@ int main(int argc, char *argv[]) {
       cifrado_cesar(88, buffer, CAESAR_DECYPHER, nread);
 #elif defined AES
 /*Si al compilar definimos AES, se reiniciarán iv y dec_key y se desencriptará buffer_encriptado */
+	int nread2 = nread / 16;
+	if ( nread % 16 == 0) nread2++;
+	nread = nread2 * 16;
 	memset(iv, 0x00, AES_BLOCK_SIZE); 
  	AES_set_decrypt_key(aes_key, sizeof(aes_key)*8, &dec_key);
-  	AES_cbc_encrypt(buffer_encriptado, buffer, nread+5, &dec_key, iv, AES_DECRYPT);	
+  	AES_cbc_encrypt(buffer_encriptado, buffer, nread, &dec_key, iv, AES_DECRYPT);	
 #endif
 /*Si no se define nada, se enviará el texto en plano */
       nwrite = cwrite(tap_fd, buffer, nread);
