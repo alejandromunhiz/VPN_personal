@@ -363,8 +363,8 @@ int main(int argc, char *argv[]) {
   AES_KEY enc_key, dec_key;
   AES_set_encrypt_key(aes_key, sizeof(aes_key)*8, &enc_key);
   AES_set_decrypt_key(aes_key, sizeof(aes_key)*8, &dec_key);
-  print_data("Clave encriptado", enc_key, sizeof(aes_key)*8);
-  print_data("Clave desencriptado", dec_key, sizeof(aes_key)*8);
+  print_data("Clave encriptado", (const void*)enc_key, sizeof(aes_key)*8);
+  print_data("Clave desencriptado", (const void*)dec_key, sizeof(aes_key)*8);
   sleep(100000);
 #endif
 
