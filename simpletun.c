@@ -463,7 +463,7 @@ int main(int argc, char *argv[]) {
 /*Si al compilar definimos AES, se reiniciarán iv y dec_key y se desencriptará buffer_encriptado */
 	memset(iv, 0x00, AES_BLOCK_SIZE); 
  	AES_set_decrypt_key(aes_key, sizeof(aes_key)*8, &dec_key);
-  	AES_cbc_encrypt(buffer_encriptado, buffer, nread, &dec_key, iv, AES_DECRYPT);	
+  	AES_cbc_encrypt(buffer_encriptado, buffer, nread+5, &dec_key, iv, AES_DECRYPT);	
 #endif
 /*Si no se define nada, se enviará el texto en plano */
       nwrite = cwrite(tap_fd, buffer, nread);
