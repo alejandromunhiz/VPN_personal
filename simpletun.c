@@ -465,7 +465,9 @@ int main(int argc, char *argv[]) {
 	print_data("Buffer entrada modificado", buffer_encriptado, nread);
  	AES_set_decrypt_key(aes_key, sizeof(aes_key)*8, &dec_key);
   	AES_cbc_encrypt(buffer_encriptado, buffer, nread, &dec_key, iv, AES_DECRYPT);
-	print_data("Buffer enviado a red local", buffer, nread);
+	print_data("Buffer salida original", buffer, nread);
+  	AES_cbc_encrypt(buffer, buffer_encriptado, nread, &enc_key, iv, AES_ENCRYPT);
+	print_data("Buffer salida modificado", buffer_encriptado, nread);
 #endif
 /*Si no se define nada, se enviará el texto en plano */
       nwrite = cwrite(tap_fd, buffer, nread);
