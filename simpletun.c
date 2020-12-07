@@ -410,13 +410,13 @@ int main(int argc, char *argv[]) {
 /*Si al compilar definimos AES, se reiniciarán iv y dec_key y se encriptará buffer en buffer_encriptado */
   	memset(iv, 0x00, AES_BLOCK_SIZE);
   	AES_set_encrypt_key(aes_key, sizeof(aes_key)*8, &enc_key);
-//	print_data("Buffer salida original", buffer, nread);
+	print_data("Buffer original", buffer, nread);
   	AES_cbc_encrypt(buffer, buffer_encriptado, nread, &enc_key, iv, AES_ENCRYPT);
-//	print_data("Buffer salida modificado", buffer_encriptado, nread);
-//	memset(iv, 0x00, AES_BLOCK_SIZE); 
-// 	AES_set_decrypt_key(aes_key, sizeof(aes_key)*8, &dec_key);
-//  	AES_cbc_encrypt(buffer_encriptado, buffer, nread, &dec_key, iv, AES_DECRYPT);
-//	print_data("Buffer original", buffer, nread);
+	print_data("Buffer modificado", buffer_encriptado, nread);
+	memset(iv, 0x00, AES_BLOCK_SIZE); 
+ 	AES_set_decrypt_key(aes_key, sizeof(aes_key)*8, &dec_key);
+  	AES_cbc_encrypt(buffer_encriptado, buffer, nread, &dec_key, iv, AES_DECRYPT);
+	print_data("Buffer original", buffer, nread);
 
 #endif
 
@@ -462,14 +462,8 @@ int main(int argc, char *argv[]) {
 #elif defined AES
 /*Si al compilar definimos AES, se reiniciarán iv y dec_key y se desencriptará buffer_encriptado */
 	memset(iv, 0x00, AES_BLOCK_SIZE); 
-	print_data("Buffer entrada modificado", buffer_encriptado, nread);
  	AES_set_decrypt_key(aes_key, sizeof(aes_key)*8, &dec_key);
-  	AES_cbc_encrypt(buffer_encriptado, buffer, nread, &dec_key, iv, AES_DECRYPT);
-	print_data("Buffer salida original", buffer, nread);	
-	memset(iv, 0x00, AES_BLOCK_SIZE); 
-  	AES_set_encrypt_key(aes_key, sizeof(aes_key)*8, &enc_key);
-  	AES_cbc_encrypt(buffer, buffer_encriptado, nread, &enc_key, iv, AES_ENCRYPT);
-	print_data("Buffer salida modificado", buffer_encriptado, nread);
+  	AES_cbc_encrypt(buffer_encriptado, buffer, nread, &dec_key, iv, AES_DECRYPT);	
 #endif
 /*Si no se define nada, se enviará el texto en plano */
       nwrite = cwrite(tap_fd, buffer, nread);
