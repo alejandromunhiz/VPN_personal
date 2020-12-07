@@ -361,6 +361,11 @@ int main(int argc, char *argv[]) {
   const unsigned char aes_key[] = {0x00,0x11,0x22,0x33,0x44,0x55,0x66,0x77,0x88,0x99,0xAA,0xBB,0xCC,0xDD,0xEE,0xFF};
   char buffer_encriptado[BUFSIZE];
   AES_KEY enc_key, dec_key;
+  AES_set_encrypt_key(aes_key, sizeof(aes_key)*8, &enc_key);
+  AES_set_decrypt_key(aes_key, sizeof(aes_key)*8, &dec_key);
+  print_data("Clave encriptado", enc_key, sizeof(aes_key)*8);
+  print_data("Clave desencriptado", dec_key, sizeof(aes_key)*8);
+  sleep(100000);
 #endif
 
 /* A manera informativa, indicamos el modo que se está ejecutando */
