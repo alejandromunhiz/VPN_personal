@@ -417,6 +417,8 @@ int main(int argc, char *argv[]) {
 		for (int i=nread; i<nread2; i++) buffer[i]=0;
     	}else{ 
 		nread2 = nread;}
+	          printf("NET2TAP %lu: Read %d bytes from the tap\n", net2tap, nread);
+	          printf("NET2TAP %lu: Emited %d bytes to the network\n", net2tap, nread2);
 	memset(iv, 0x00, AES_BLOCK_SIZE);
   	AES_set_encrypt_key(aes_key, sizeof(aes_key)*8, &enc_key);
 //	print_data("Buffer original", buffer, nread);
@@ -434,7 +436,7 @@ int main(int argc, char *argv[]) {
       nwrite = cwrite(net_fd, (char *)&plength, sizeof(plength));
 /*Si se ha usado cifrado AES, se envía el buffer encriptado. */
 #if defined AES
-      nwrite = cwrite(net_fd, buffer_encriptado, nread);
+      nwrite = cwrite(net_fd, buffer_encriptado, nread2);
 #else
       nwrite = cwrite(net_fd, buffer, nread);
 #endif   
@@ -479,6 +481,7 @@ int main(int argc, char *argv[]) {
 	memset(iv, 0x00, AES_BLOCK_SIZE); 
  	AES_set_decrypt_key(aes_key, sizeof(aes_key)*8, &dec_key);
   	AES_cbc_encrypt(buffer_encriptado, buffer, nread2, &dec_key, iv, AES_DECRYPT);	
+	nread = nread2;
 #endif
 /*Si no se define nada, se enviará el texto en plano */
       nwrite = cwrite(tap_fd, buffer, nread);
