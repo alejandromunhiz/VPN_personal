@@ -422,7 +422,7 @@ int main(int argc, char *argv[]) {
 	memset(iv, 0x00, AES_BLOCK_SIZE);
   	AES_set_encrypt_key(aes_key, sizeof(aes_key)*8, &enc_key);
   	AES_cbc_encrypt(buffer, buffer_encriptado, nread2, &enc_key, iv, AES_ENCRYPT);
-
+	nread=nread2;
 #endif
 
       /* write length + packet */
