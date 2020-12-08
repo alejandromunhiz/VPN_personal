@@ -411,15 +411,18 @@ int main(int argc, char *argv[]) {
       	cifrado_cesar(88, buffer, CAESAR_CYPHER, nread);
 #elif defined AES 
 /*Si al compilar definimos AES, se reiniciarán iv y dec_key y se encriptará buffer en buffer_encriptado */
-  	memset(iv, 0x00, AES_BLOCK_SIZE);
+/*Adaptamos el tamaño del mensaje para el AES */
+	int nread2 = nread + 16 - (nread % 16);
+	for (int i=nread; i<nread2; i++) buffer[i]=0;
+	memset(iv, 0x00, AES_BLOCK_SIZE);
   	AES_set_encrypt_key(aes_key, sizeof(aes_key)*8, &enc_key);
-	print_data("Buffer original", buffer, nread);
-  	AES_cbc_encrypt(buffer, buffer_encriptado, nread, &enc_key, iv, AES_ENCRYPT);
-	print_data("Buffer modificado", buffer_encriptado, nread);
-	memset(iv, 0x00, AES_BLOCK_SIZE); 
- 	AES_set_decrypt_key(aes_key, sizeof(aes_key)*8, &dec_key);
-  	AES_cbc_encrypt(buffer_encriptado, buffer, nread, &dec_key, iv, AES_DECRYPT);
-	print_data("Buffer original", buffer, nread);
+//	print_data("Buffer original", buffer, nread);
+  	AES_cbc_encrypt(buffer, buffer_encriptado, nread2, &enc_key, iv, AES_ENCRYPT);
+//	print_data("Buffer modificado", buffer_encriptado, nread);
+//	memset(iv, 0x00, AES_BLOCK_SIZE); 
+ //	AES_set_decrypt_key(aes_key, sizeof(aes_key)*8, &dec_key);
+//  	AES_cbc_encrypt(buffer_encriptado, buffer, nread, &dec_key, iv, AES_DECRYPT);
+//	print_data("Buffer original", buffer, nread);
 
 #endif
 
@@ -464,12 +467,12 @@ int main(int argc, char *argv[]) {
       cifrado_cesar(88, buffer, CAESAR_DECYPHER, nread);
 #elif defined AES
 /*Si al compilar definimos AES, se reiniciarán iv y dec_key y se desencriptará buffer_encriptado */
-	int nread2 = nread / 16;
-	if ( nread % 16 == 0) nread2++;
-	nread = nread2 * 16;
+/*Adaptamos el tamaño del mensaje para el AES */
+	int nread2 = nread + 16 - (nread % 16);
+	for (int i=nread; i<nread2; i++) buffer_encriptado[i]=0;
 	memset(iv, 0x00, AES_BLOCK_SIZE); 
  	AES_set_decrypt_key(aes_key, sizeof(aes_key)*8, &dec_key);
-  	AES_cbc_encrypt(buffer_encriptado, buffer, nread, &dec_key, iv, AES_DECRYPT);	
+  	AES_cbc_encrypt(buffer_encriptado, buffer, nread2, &dec_key, iv, AES_DECRYPT);	
 #endif
 /*Si no se define nada, se enviará el texto en plano */
       nwrite = cwrite(tap_fd, buffer, nread);
