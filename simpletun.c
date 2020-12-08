@@ -413,7 +413,10 @@ int main(int argc, char *argv[]) {
 /*Si al compilar definimos AES, se reiniciarán iv y dec_key y se encriptará buffer en buffer_encriptado */
 /*Adaptamos el tamaño del mensaje para el AES */
 	int nread2 = nread + 16 - (nread % 16);
-	for (int i=nread; i<nread2; i++) buffer[i]=0;
+	if ((nread % 16) != 0) {   
+		for (int i=nread; i<nread2; i++) buffer[i]=0;
+    	}else{ 
+		nread2 = nread;}
 	memset(iv, 0x00, AES_BLOCK_SIZE);
   	AES_set_encrypt_key(aes_key, sizeof(aes_key)*8, &enc_key);
 //	print_data("Buffer original", buffer, nread);
@@ -469,7 +472,10 @@ int main(int argc, char *argv[]) {
 /*Si al compilar definimos AES, se reiniciarán iv y dec_key y se desencriptará buffer_encriptado */
 /*Adaptamos el tamaño del mensaje para el AES */
 	int nread2 = nread + 16 - (nread % 16);
-	for (int i=nread; i<nread2; i++) buffer_encriptado[i]=0;
+	if ((nread % 16) != 0) {   
+		for (int i=nread; i<nread2; i++) buffer[i]=0;
+    	}else{ 
+		nread2 = nread;}
 	memset(iv, 0x00, AES_BLOCK_SIZE); 
  	AES_set_decrypt_key(aes_key, sizeof(aes_key)*8, &dec_key);
   	AES_cbc_encrypt(buffer_encriptado, buffer, nread2, &dec_key, iv, AES_DECRYPT);	
