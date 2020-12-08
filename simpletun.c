@@ -363,7 +363,7 @@ int main(int argc, char *argv[]) {
   AES_KEY enc_key, dec_key;
 //  AES_set_encrypt_key(aes_key, sizeof(aes_key)*8, &enc_key);
 //  AES_set_decrypt_key(aes_key, sizeof(aes_key)*8, &dec_key);
-
+		
 #endif
 
 /* A manera informativa, indicamos el modo que se está ejecutando */
@@ -411,18 +411,19 @@ int main(int argc, char *argv[]) {
       	cifrado_cesar(88, buffer, CAESAR_CYPHER, nread);
 #elif defined AES 
 /*Si al compilar definimos AES, se reiniciarán iv y dec_key y se encriptará buffer en buffer_encriptado */
-/*Adaptamos el tamaño del mensaje para el AES */
+  	memset(iv, 0x00, AES_BLOCK_SIZE);
+  	AES_set_encrypt_key(aes_key, sizeof(aes_key)*8, &enc_key);
+
+	/*Adaptamos el tamaño del mensaje para el AES */
 	int nread2 = nread;
 	if ((nread % 16) != 0) {
 		nread2 = nread2 + 16 - (nread % 16);
 		for (int i=nread; i<nread2; i++) buffer[i]=0;
-    	}
-	printf("NET2TAP %lu: Read %d bytes from the tap\n", net2tap, nread);
-	printf("NET2TAP %lu: Emited %d bytes to the network\n", net2tap, nread2);
-	memset(iv, 0x00, AES_BLOCK_SIZE);
-  	AES_set_encrypt_key(aes_key, sizeof(aes_key)*8, &enc_key);
+    	}	
+
   	AES_cbc_encrypt(buffer, buffer_encriptado, nread2, &enc_key, iv, AES_ENCRYPT);
 	nread=nread2;
+
 #endif
 
       /* write length + packet */
@@ -430,7 +431,7 @@ int main(int argc, char *argv[]) {
       nwrite = cwrite(net_fd, (char *)&plength, sizeof(plength));
 /*Si se ha usado cifrado AES, se envía el buffer encriptado. */
 #if defined AES
-      nwrite = cwrite(net_fd, buffer_encriptado, nread2);
+      nwrite = cwrite(net_fd, buffer_encriptado, nread);
 #else
       nwrite = cwrite(net_fd, buffer, nread);
 #endif   
@@ -466,15 +467,10 @@ int main(int argc, char *argv[]) {
       cifrado_cesar(88, buffer, CAESAR_DECYPHER, nread);
 #elif defined AES
 /*Si al compilar definimos AES, se reiniciarán iv y dec_key y se desencriptará buffer_encriptado */
-/*Adaptamos el tamaño del mensaje para el AES */
-//	int nread2 = nread + 16 - (nread % 16);
-//	if ((nread % 16) != 0) {   
-//		for (int i=nread; i<nread2; i++) buffer[i]=0;
-//   	}else{ 
-//		nread2 = nread;}
 	memset(iv, 0x00, AES_BLOCK_SIZE); 
- 	AES_set_decrypt_key(aes_key, sizeof(aes_key)*8, &dec_key);
-  	AES_cbc_encrypt(buffer_encriptado, buffer, nread, &dec_key, iv, AES_DECRYPT);	
+  	AES_set_decrypt_key(aes_key, sizeof(aes_key)*8, &dec_key);
+  	AES_cbc_encrypt(buffer_encriptado, buffer, nread, &dec_key, iv, AES_DECRYPT);
+
 #endif
 /*Si no se define nada, se enviará el texto en plano */
       nwrite = cwrite(tap_fd, buffer, nread);
